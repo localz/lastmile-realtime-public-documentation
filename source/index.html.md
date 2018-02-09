@@ -8,7 +8,6 @@ language_tabs: # must be one of https://git.io/vQNgJ
   - javascript
 
 toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
   - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
 
 includes:
@@ -19,221 +18,115 @@ search: true
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Welcome to the LastMile real time API! You can use our API to access Last Mile Real Time API endpoint, which can get information on route of specific track id in our database.
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
 
-This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
+# Last Mile Real Time API
 
-# Authentication
+## Get route
 
-> To authorize, use this code:
+```shell
+curl "https://dev-realtime-wsapi-au.localz.io/v2/projects/{replace_with_valid_project_id}/tracks/{replace_with_valid_track_id}/route?apikey={replace_with_valid_api_key}"
+```
 
 ```ruby
-require 'kittn'
+require 'json'
+require 'net/http'
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+url = 'https://dev-realtime-wsapi-au.localz.io/v2/projects/{replace_with_valid_project_id}/tracks/ABCdef/route?apikey={replace_with_valid_api_key}'
+uri = URI(url)
+routeDetails = Net::HTTP.get(uri)
+
+JSON.parse(routeDetails)
 ```
 
 ```python
-import kittn
+import json
+import requests
 
-api = kittn.authorize('meowmeowmeow')
-```
-
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
-
-## Get All Kittens
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
+url = 'https://dev-realtime-wsapi-au.localz.io/v2/projects/{replace_with_valid_project_id}/tracks/ABCdef/route?apikey={replace_with_valid_api_key}'
+response = requests.get(url)
+if(response.ok):
+  routeDetails = json.loads(response.content)
+  print(routeDetails)
+else:
+  routeDetails.raise_for_status()
 ```
 
 ```javascript
-const kittn = require('kittn');
+const axios = require('axios');
 
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
+axios.get('https://dev-realtime-wsapi-au.localz.io/v2/projects/{replace_with_valid_project_id}/tracks/ABCdef/route', {
+    headers: {'Content-Type': 'application/json'},
+    params: {
+      apikey: {replace_with_valid_api_key}
+    }
+  })
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
 ```
 
 > The above command returns JSON structured like this:
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
+{
+    "trackId": "ABCdef",
+    "points": [
+        {
+            "duration": 2300,
+            "altitude": 25.799999237060547,
+            "timestamp": "2018-02-07T06:39:30.036Z",
+            "horizontalAccuracy": 50.104,
+            "bearing": 252.2151629429456,
+            "distance": 3,
+            "geoJson": {
+                "coordinates": [
+                    114.7471511250558,
+                    -35.8709393916107
+                ],
+                "type": "Point"
+            }
+        }
+    ],
+    "status": "active",
+    "destinations": [
+        {
+            "geoJson": {
+                "coordinates": [
+                    144.9632325,
+                    -35.8059473
+                ],
+                "type": "Point"
+            },
+            "eta": 1819
+        }
+    ],
+    "eta": 1819
+}
 ```
 
-This endpoint retrieves all kittens.
+This endpoint retrieves the route of specific track id.
 
 ### HTTP Request
 
-`GET http://example.com/api/kittens`
+`GET /v2/projects/{projectId}/tracks/{trackId}/route?apikey={apikey}`
 
 ### Query Parameters
 
 Parameter | Default | Description
 --------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+projectId | true | The project id
+trackId | true | Job track id
+apikey | true | Request for Developer API key
 
 <aside class="success">
-Remember — a happy kitten is an authenticated kitten!
+Route & the destination points
 </aside>
 
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
-```
-
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
-### HTTP Request
-
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
-
-This endpoint deletes a specific kitten.
-
-### HTTP Request
-
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
-
+<aside class="warning"><code>apikey</code> must be added in query string or header, otherwise the API will return error code 401 (Unauthorized).</aside>
+<aside class="info">The example code is using development base url. To obtain production base url, please contact Localz.</aside>
